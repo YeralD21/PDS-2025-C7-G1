@@ -1,0 +1,41 @@
+version: '3'
+services:
+  mysql:
+    container_name: mysql
+    restart: always
+    image: mysql:5.7.25
+    volumes:
+      - ./sql-data/db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    hostname: VIP
+    environment:
+      MYSQL_DATABASE: 'testlink'
+      MYSQL_USER: 'suscribete'
+      MYSQL_PASSWORD: 'Recuerda_Suscribirte'
+      MYSQL_ROOT_PASSWORD: 'pwd_root'
+
+
+  testlink:
+    image: imtnd/testlink:latest
+    container_name: testlink_app
+    restart: always
+    depends_on:
+      - mysql
+    volumes:
+      - ./www:/var/www/html
+    ports:
+      - "80:80"
+    environment:
+      TL_MYSQL_HOST: mysql
+      TL_MYSQL_USER: testlink_user
+      TL_MYSQL_PASSWORD: your_testlink_user_password
+      TL_DB_NAME: testlink_db
+      TL_DB_PREFIX: tl_
+      TL_ADMIN_EMAIL: your_admin_email@example.com
+      TL_ADMIN_USER: your_admin_username
+      TL_ADMIN_PASSWORD: your_admin_password
+
+
+volumes:
+  mysql_data:
