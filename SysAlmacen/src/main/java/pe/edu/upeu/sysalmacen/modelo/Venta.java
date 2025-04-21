@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,10 +20,13 @@ public class Venta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_venta")
     private Long idVenta;
+    
     @Column(name = "preciobase", nullable = false)
     private Double precioBase;
+    
     @Column(name = "igv", nullable = false)
     private Double igv;
+    
     @Column(name = "preciototal", nullable = false)
     private Double precioTotal;
 
@@ -41,13 +42,17 @@ public class Venta {
 
     @Column(name = "num_doc", nullable = false, length = 20)
     private String numDoc;
+    
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "fecha_gener", nullable = false)
     private LocalDateTime fechaGener;
+    
     @Column(name = "serie", nullable = false, length = 20)
     private String serie;
+    
     @Column(name = "tipo_doc", nullable = false, length = 10)
     private String tipoDoc;
+    
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VentaDetalle> ventaDetalles;
 }

@@ -1,7 +1,6 @@
 package pe.edu.upeu.sysalmacen.servicio;
 
-import pe.edu.upeu.sysalmacen.modelo.Categoria;
-import pe.edu.upeu.sysalmacen.modelo.Marca;
+import pe.edu.upeu.sysalmacen.modelo.Categoria;  // Solo el import necesario
 
-public interface ICategoriaService extends ICrudGenericoService<Categoria, Long>{
+public interface ICategoriaService extends ICrudGenericoService<Categoria, Long> {
 }

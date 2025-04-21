@@ -10,29 +10,32 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AuthorizeLogic {
 
-    public boolean hasAccess(String path){
+    public boolean hasAccess(String path) {
         boolean result = false;
 
-        String methodRole = switch(path){
+        String methodRole = switch (path) {
             case "findAll" -> "ADMIN";
             case "findById", "getBydId" -> "USER,DBA";
             default -> "ROOT";
         };
 
-        String methodRoles[] = methodRole.split(",");
+        String[] methodRoles = methodRole.split(",");  // Fixed array declaration
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Username is: " + auth.getName());
+        log.info("Username is: {}", auth.getName());  // Changed to parameterized logging
 
-        for(GrantedAuthority grantedAuthority : auth.getAuthorities()){
+        for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
             String roleUser = grantedAuthority.getAuthority();
-            log.info("Role is: " + roleUser);
+            log.info("Role is: {}", roleUser);  // Changed to parameterized logging
 
-            for(String role : methodRoles){
-                if(roleUser.equalsIgnoreCase(role)){
+            for (String role : methodRoles) {
+                if (roleUser.equalsIgnoreCase(role)) {
                     result = true;
                     break;
                 }
+            }
+            if (result) {  // Early exit if match found
+                break;
             }
         }
 

@@ -24,21 +24,22 @@ public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtUserDetailsService jwtUserDetailsService;
     @PostMapping("/login")
-    public ResponseEntity<UsuarioDTO> login(@RequestBody @Valid UsuarioDTO.CredencialesDto credentialsDto, HttpServletRequest request) {
+    public ResponseEntity<UsuarioDTO> login(@RequestBody @Valid UsuarioDTO.CredencialesDto credentialsDto, 
+                                          HttpServletRequest request) {
         UsuarioDTO userDto = userService.login(credentialsDto);
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(credentialsDto.user());
         userDto.setToken(jwtTokenUtil.generateToken(userDetails));
         request.getSession().setAttribute("USER_SESSION", userDto.getUser());
+        logger.debug("Usuario {} ha iniciado sesión exitosamente", credentialsDto.user());
         return ResponseEntity.ok(userDto);
     }
     @PostMapping("/register")
     public ResponseEntity<UsuarioDTO> register(@RequestBody @Valid UsuarioDTO.UsuarioCrearDto user) {
-        System.out.println("Passss...."+ user.rol());
+        logger.debug("Registrando nuevo usuario con rol: {}", user.rol());
         UsuarioDTO createdUser = userService.register(user);
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(user.user());
         createdUser.setToken(jwtTokenUtil.generateToken(userDetails));
-        //createdUser.setClave("");
-        //createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
+        logger.info("Nuevo usuario registrado: {}", user.user());
         return ResponseEntity.created(URI.create("/users/" + createdUser.getUser())).body(createdUser);
     }
 }

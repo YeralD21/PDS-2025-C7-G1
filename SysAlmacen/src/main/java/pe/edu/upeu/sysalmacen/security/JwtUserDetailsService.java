@@ -1,7 +1,5 @@
 package pe.edu.upeu.sysalmacen.security;
 
-
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +15,6 @@ import pe.edu.upeu.sysalmacen.repositorio.IUsuarioRolRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-//Clase S4
 @Service
 @RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
@@ -27,7 +24,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario u=repoU.findOneByUser(username).orElse(null);
+        Usuario u = repoU.findOneByUser(username).orElse(null);
         List<UsuarioRol> user = repo.findOneByUsuarioUser(username);
 
         if (user == null) {
@@ -35,9 +32,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
 
         List<GrantedAuthority> roles = new ArrayList<>();
-        user.forEach(rol -> {
-            roles.add(new SimpleGrantedAuthority(rol.getRol().getNombre().name()));
-        });
+        user.forEach(rol -> roles.add(new SimpleGrantedAuthority(rol.getRol().getNombre().name())));
 
         return new org.springframework.security.core.userdetails.User(u.getUser(), u.getClave(), roles);
     }

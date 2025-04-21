@@ -3,7 +3,7 @@
   <installations>
     <hudson.plugins.sonar.SonarInstallation>
       <name>Sonarqube</name>
-      <serverUrl>http://sonarqube:9000</serverUrl>
+      <serverUrl>http://docker.sonar:9000</serverUrl>
       <credentialsId>Sonarqube</credentialsId>
       <webhookSecretId></webhookSecretId>
       <mojoVersion></mojoVersion>

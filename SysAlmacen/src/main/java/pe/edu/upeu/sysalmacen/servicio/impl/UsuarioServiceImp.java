@@ -26,10 +26,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioServiceImp extends CrudGenericoServiceImp<Usuario, Long> implements IUsuarioService {
     private final IUsuarioRepository repo;
-
     private final IRolService rolService;
     private final IUsuarioRolService iurService;
-
     private final PasswordEncoder passwordEncoder;
     private final UsuarioMapper userMapper;
 
@@ -37,8 +35,6 @@ public class UsuarioServiceImp extends CrudGenericoServiceImp<Usuario, Long> imp
     protected ICrudGenericoRepository<Usuario, Long> getRepo() {
         return repo;
     }
-
-
 
     @Override
     public UsuarioDTO login(UsuarioDTO.CredencialesDto credentialsDto) {
@@ -52,41 +48,38 @@ public class UsuarioServiceImp extends CrudGenericoServiceImp<Usuario, Long> imp
         throw new ModelNotFoundException("Invalid password", HttpStatus.BAD_REQUEST);
     }
 
-
-
     @Override
     public UsuarioDTO register(UsuarioDTO.UsuarioCrearDto userDto) {
         Optional<Usuario> optionalUser = repo.findOneByUser(userDto.user());
         if (optionalUser.isPresent()) {
             throw new ModelNotFoundException("Login already exists", HttpStatus.BAD_REQUEST);
         }
+        
         Usuario user = userMapper.toEntityFromCADTO(userDto);
         user.setClave(passwordEncoder.encode(CharBuffer.wrap(userDto.clave())));
         Usuario savedUser = repo.save(user);
-        Rol r;
-        switch (userDto.rol()){
-            case "ADMIN":{
-                r=rolService.getByNombre(Rol.RolNombre.ADMIN).orElse(null);
-            } break;
-            case "DBA":{
-                r=rolService.getByNombre(Rol.RolNombre.DBA).orElse(null);
-            } break;
-            default:{
-                r=rolService.getByNombre(Rol.RolNombre.USER).orElse(null);
-            } break;
-        }
 
-        /*UsuarioRol u=new UsuarioRol();
-        u.setRol(r);
-        u.setUsuario(savedUser);
-        iurService.save(u);
-        */
+        // Assigning roles based on the provided role
+        Rol r = assignRole(userDto.rol());
 
+        // Assigning the role to the user
         iurService.save(UsuarioRol.builder()
                 .usuario(savedUser)
                 .rol(r)
                 .build());
+
         return userMapper.toDTO(savedUser);
     }
-}
 
+    // Helper method to assign roles
+    private Rol assignRole(String roleName) {
+        switch (roleName) {
+            case "ADMIN":
+                return rolService.getByNombre(Rol.RolNombre.ADMIN).orElse(null);
+            case "DBA":
+                return rolService.getByNombre(Rol.RolNombre.DBA).orElse(null);
+            default:
+                return rolService.getByNombre(Rol.RolNombre.USER).orElse(null);
+        }
+    }
+}
